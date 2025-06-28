@@ -1,0 +1,534 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Contribution Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6f42c1;
+            --secondary: #6610f2;
+            --light-bg: #f8f9fa;
+            --dark-bg: #212529;
+            --card-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+        }
+        
+        header {
+            text-align: center;
+            margin: 2rem 0 3rem;
+        }
+        
+        .title {
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+        
+        .search-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-control, .form-select, .btn {
+            border-radius: 12px;
+            padding: 0.8rem 1.2rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(111, 66, 193, 0.3);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            font-weight: 600;
+            background: white;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-radius: 15px 15px 0 0 !important;
+            padding: 1.2rem 1.5rem;
+        }
+        
+        .profile-card .card-body {
+            display: flex;
+            align-items: center;
+        }
+        
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e9ecef;
+            margin-right: 1.5rem;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            text-align: center;
+            background: rgba(111, 66, 193, 0.1);
+            padding: 0.8rem;
+            border-radius: 10px;
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .badge-bug {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+        }
+        
+        .badge-feature {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+        
+        .badge-docs {
+            background-color: rgba(13, 110, 253, 0.15);
+            color: #0d6efd;
+        }
+        
+        .badge-refactor {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        .badge-testing {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+        }
+        
+        .ai-summary {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            background: rgba(111, 66, 193, 0.03);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .contribution-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .contribution-item:last-child {
+            border-bottom: none;
+        }
+        
+        .contribution-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .icon-commit {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+        }
+        
+        .icon-pr {
+            background-color: rgba(13, 110, 253, 0.15);
+            color: #0d6efd;
+        }
+        
+        .icon-issue {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+        }
+        
+        .contribution-content {
+            flex: 1;
+        }
+        
+        .contribution-repo {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 0.2rem;
+        }
+        
+        .contribution-date {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        #loader {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .spinner {
+            width: 3rem;
+            height: 3rem;
+        }
+        
+        #results {
+            display: none;
+        }
+        
+        .error-alert {
+            display: none;
+            margin-top: 1.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        
+        }
+
+        .ai-summary {
+        white-space: pre-line; /* Preserve line breaks */
+        line-height: 1.8;
+         }
+
+       .ai-summary::before {
+        content: "•";
+        margin-right: 8px;
+        color: var(--primary);
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="title display-4">GitHub Contribution Tracker</h1>
+            <p class="subtitle">AI-powered summaries of your development activity</p>
+        </header>
+        
+        <div class="search-card">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="fab fa-github"></i></span>
+                        <input type="text" id="githubUsername" class="form-control form-control-lg" 
+                               placeholder="Enter GitHub username" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select id="timeRange" class="form-select form-select-lg">
+                        <option value="7">Last 7 days</option>
+                        <option value="14">Last 14 days</option>
+                        <option value="30">Last 30 days</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button id="analyzeBtn" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-chart-line me-2"></i>Analyze
+                    </button>
+                </div>
+            </div>
+            
+            <div class="alert alert-danger error-alert mt-3" id="errorAlert" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span id="errorMessage"></span>
+            </div>
+        </div>
+        
+        <div id="loader">
+            <div class="spinner-border text-primary spinner" role="status"></div>
+            <p class="mt-3">Analyzing GitHub activity and generating AI summary...</p>
+        </div>
+        
+        <div id="results">
+            <!-- Profile Card -->
+            <div class="card profile-card">
+                <div class="card-body">
+                    <img id="avatar" src="https://via.placeholder.com/100" class="profile-img">
+                    <div class="profile-info">
+                        <h2 id="userName" class="mb-1"></h2>
+                        <p id="userBio" class="text-muted mb-3"></p>
+                        
+                        <div class="stats">
+                            <div class="stat">
+                                <div class="stat-value" id="repoCount">0</div>
+                                <div class="stat-label">Repositories</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="commitCount">0</div>
+                                <div class="stat-label">Commits</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="prCount">0</div>
+                                <div class="stat-label">PRs</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-value" id="issueCount">0</div>
+                                <div class="stat-label">Issues</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Summary Card -->
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-robot me-2 text-primary"></i>AI-Powered Weekly Summary
+                </div>
+                <div class="card-body">
+                    <div class="ai-summary" id="aiSummary">
+                        Your summary will appear here after analysis...
+                    </div>
+                    <div class="mt-4">
+                        <h6 class="mb-2">Activity Tags:</h6>
+                        <div id="tagsContainer"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contributions Card -->
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-code-branch me-2 text-primary"></i>Recent Contributions
+                </div>
+                <div class="card-body p-0">
+                    <div id="contributionsList"></div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Powered by GitHub API & OpenAI | Built with Flask & Bootstrap</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('analyzeBtn').addEventListener('click', async () => {
+            const username = document.getElementById('githubUsername').value.trim();
+            const days = document.getElementById('timeRange').value;
+            
+            if (!username) {
+                showError('Please enter a GitHub username');
+                return;
+            }
+            
+            // Reset UI
+            hideError();
+            document.getElementById('loader').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                // Fetch GitHub data
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        days: days
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to fetch data');
+                }
+                
+                const data = await response.json();
+                
+                // Update UI with data
+                updateProfile(data);
+                updateSummary(data);
+                updateContributions(data);
+                
+                // Show results
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('results').style.display = 'block';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loader').style.display = 'none';
+                showError(error.message || 'Error fetching data. Please try again.');
+            }
+        });
+        
+        function updateProfile(data) {
+            document.getElementById('avatar').src = data.avatar_url || 'https://via.placeholder.com/100';
+            document.getElementById('userName').textContent = data.name || data.username;
+            document.getElementById('userBio').textContent = data.bio || 'No bio available';
+            document.getElementById('repoCount').textContent = data.public_repos || 0;
+            document.getElementById('commitCount').textContent = data.commit_count || 0;
+            document.getElementById('prCount').textContent = data.pr_count || 0;
+            document.getElementById('issueCount').textContent = data.issue_count || 0;
+        }
+        
+        function updateSummary(data) {
+            document.getElementById('aiSummary').textContent = data.summary || 'No summary available';
+            
+            // Render tags
+            const tagsContainer = document.getElementById('tagsContainer');
+            tagsContainer.innerHTML = '';
+            
+            if (data.tags && data.tags.length > 0) {
+                data.tags.forEach(tag => {
+                    const badge = document.createElement('span');
+                    badge.className = `badge ${getTagClass(tag)}`;
+                    badge.textContent = tag;
+                    tagsContainer.appendChild(badge);
+                });
+            } else {
+                tagsContainer.innerHTML = '<span class="text-muted">No tags identified</span>';
+            }
+        }
+        
+        function updateContributions(data) {
+            const contributionsList = document.getElementById('contributionsList');
+            contributionsList.innerHTML = '';
+            
+            if (data.contributions && data.contributions.length > 0) {
+                data.contributions.forEach(item => {
+                    const contribution = document.createElement('div');
+                    contribution.className = 'contribution-item';
+                    
+                    // Format date
+                    const date = new Date(item.date);
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    
+                    contribution.innerHTML = `
+                        <div class="contribution-icon ${getIconClass(item.type)}">
+                            <i class="${getIcon(item.type)}"></i>
+                        </div>
+                        <div class="contribution-content">
+                            <div class="d-flex justify-content-between">
+                                <strong>${item.title}</strong>
+                                <span class="contribution-date">${formattedDate}</span>
+                            </div>
+                            <div class="contribution-repo">${item.repo || ''}</div>
+                        </div>
+                        <div>
+                            <span class="badge ${getTagClass(item.type)}">${item.type}</span>
+                        </div>
+                    `;
+                    
+                    contributionsList.appendChild(contribution);
+                });
+            } else {
+                contributionsList.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p>No recent contributions found</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function getIcon(type) {
+            const icons = {
+                'commit': 'fas fa-code-commit',
+                'pr': 'fas fa-code-pull-request',
+                'issue': 'fas fa-bug'
+            };
+            return icons[type] || 'fas fa-code';
+        }
+        
+        function getIconClass(type) {
+            const classes = {
+                'commit': 'icon-commit',
+                'pr': 'icon-pr',
+                'issue': 'icon-issue'
+            };
+            return classes[type] || '';
+        }
+        
+        function getTagClass(tag) {
+            const classes = {
+                'bugfix': 'badge-bug',
+                'feature': 'badge-feature',
+                'documentation': 'badge-docs',
+                'refactoring': 'badge-refactor',
+                'testing': 'badge-testing'
+            };
+            return classes[tag.toLowerCase()] || 'badge bg-secondary';
+        }
+        
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('errorAlert').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
