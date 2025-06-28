@@ -1,7 +1,7 @@
 
 
 
-# git‑sage
+#🧠 git‑sage
 
 **Your AI-powered composer of GitHub contribution insights.**
 
@@ -28,14 +28,13 @@ git‑sage is a Flask-based web app that fetches a GitHub user’s activity comm
 
 ---
 
-##🛠️ Technologies Used:
+## 🛠️ Technologies Used
 
-Flask – Backend web server
+- **Flask** – Backend web server  
+- **OpenAI API** – Summaries and insights via ChatGPT  
+- **GitHub REST API** – Fetching user contributions  
 
-OpenAI API – Summaries via ChatGPT
-
-GitHub REST API – Fetching user activity
-
+---
 Bootstrap – Responsive UI styling
 ---
 ## 📦 Getting Started
