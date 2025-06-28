@@ -1,45 +1,46 @@
-# server.py
-from flask import Flask, request, jsonify, render_template
-import requests
-from datetime import datetime, timedelta
-import os
-import openai
-import re
-import json
+
+# from flask import Flask, request, jsonify, render_template
+# import requests
+# from datetime import datetime, timedelta
+# import os
+# import openai
+# import re
+# import json
 
 app = Flask(__name__)
 
+# Load API keys from environment variables
 app.config['OPENAI_API_KEY'] = os.getenv('OPENAI_API_KEY', 'your-openai-api-key-here')
-app.config['GITHUB_TOKEN'] = os.getenv('GITHUB_TOKEN', 'your-github-token-here')  
+app.config['GITHUB_TOKEN'] = os.getenv('GITHUB_TOKEN', 'your-github-token-here')
 
 @app.route('/')
 def index():
-    """Render the main page"""
+    """Loads the homepage with the form"""
     return render_template('index.html')
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    """Analyze GitHub contributions for a user"""
+    """Handles user input and returns analysis"""
     data = request.json
     username = data.get('username')
     days = int(data.get('days', 7))
-    
+
     if not username:
         return jsonify({"error": "Username required"}), 400
 
     try:
-        # ser profile
+        # Get user profile data
         user_data = get_user_profile(username)
-        
-        # recent activity
+
+        # Get activity data for last N days
         contributions = get_recent_activity(username, days)
-        
-        # Generate AI summary
+
+        # Generate summary using OpenAI
         summary = generate_summary(contributions) if contributions else "No recent activity found"
-        
-        # Extract tags
+
+        # Get tags like bugfix, feature, etc.
         tags = extract_tags(contributions)
-        
+
         return jsonify({
             "avatar_url": user_data.get('avatar_url'),
             "name": user_data.get('name', username),
@@ -56,36 +57,37 @@ def analyze():
         return jsonify({"error": str(e)}), 500
 
 def get_user_profile(username):
-    """Fetch GitHub user profile"""
+    """Gets GitHub profile data"""
     headers = {'Authorization': f'token {app.config["GITHUB_TOKEN"]}'} if app.config['GITHUB_TOKEN'] else {}
     response = requests.get(f'https://api.github.com/users/{username}', headers=headers)
+
     if response.status_code != 200:
         raise Exception(f"User '{username}' not found")
+
     return response.json()
 
 def get_recent_activity(username, days):
-    """Fetch recent GitHub activity"""
+    """Fetches recent activity from GitHub events"""
     since_date = (datetime.now() - timedelta(days=days)).isoformat()
     headers = {'Authorization': f'token {app.config["GITHUB_TOKEN"]}'} if app.config['GITHUB_TOKEN'] else {}
-    
-    # Get events
+
     events = requests.get(
         f'https://api.github.com/users/{username}/events',
         params={'per_page': 100},
         headers=headers
     )
-    
+
     if events.status_code != 200:
         return []
-    
+
     events = events.json()
-    
     contributions = []
+
     for event in events:
         event_date = event.get('created_at', '')
         if not event_date or event_date < since_date:
             continue
-            
+
         if event['type'] == 'PushEvent':
             for commit in event['payload'].get('commits', []):
                 contributions.append({
@@ -110,24 +112,24 @@ def get_recent_activity(username, days):
                 "date": event_date,
                 "repo": event['repo']['name']
             })
-    
-    # Sort by date descending
+
+    # Sort latest first
     contributions.sort(key=lambda x: x['date'], reverse=True)
-    return contributions[:15]  # Return max 15 items
+    return contributions[:15]
 
 def generate_summary(contributions):
-
+    """Uses OpenAI to summarize activity"""
     if not contributions:
         return "No recent activity found"
-    
+
     activities = "\n".join([f"- {c['type'].upper()}: {c['title']} ({c['repo']})" for c in contributions])
-    
+
     try:
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
-                    "role": "system", 
+                    "role": "system",
                     "content": """You summarize GitHub activity with these rules:
 1. Group identical/similar items together
 2. Remove technical implementation details unless crucial
@@ -136,7 +138,7 @@ def generate_summary(contributions):
 5. Maximum 3-5 bullet points"""
                 },
                 {
-                    "role": "user", 
+                    "role": "user",
                     "content": f"Clean and summarize these activities:\n{activities}"
                 }
             ],
@@ -145,28 +147,27 @@ def generate_summary(contributions):
         )
         summary = response.choices[0].message['content'].strip()
         return summary if summary.startswith('•') else f"• {summary}"
-    except Exception as e:
+    except Exception:
         return generate_fallback_summary(contributions)
 
 def generate_fallback_summary(contributions):
-    """Fallback when OpenAI fails"""
+    """Backup summary if OpenAI fails"""
     unique_activities = {}
     for c in contributions:
         key = c['title'].split(':')[0].split('(')[0].strip()
         unique_activities[key] = unique_activities.get(key, 0) + 1
-    
+
     bullets = []
     for activity, count in unique_activities.items():
         if count > 1:
             bullets.append(f"• Made {count} improvements to {activity}")
         else:
             bullets.append(f"• {activity}")
-    
+
     return '\n'.join(bullets[:5]) or "• Various code improvements"
 
-
 def extract_tags(contributions):
-    """Extract tags from contributions using rule-based approach"""
+    """Generates contribution tags"""
     tags = []
     for c in contributions:
         content = c['title'].lower()
