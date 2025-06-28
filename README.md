@@ -1,7 +1,8 @@
 
 
 
-#🧠 git‑sage
+## 🧠 git‑sage
+
 
 **Your AI-powered composer of GitHub contribution insights.**
 
