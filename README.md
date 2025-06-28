@@ -12,20 +12,20 @@ git‑sage is a Flask-based web app that fetches a GitHub user’s activity comm
 
 ## ✨ Features
 
-- 🔎 Fetches recent GitHub activities (commits, PRs, issues)
-- 🤖 Uses OpenAI to produce clean, human-readable summaries
-- 🏷️ Auto-tags activities for quick categorization
-- 📊 Displays counts and a timeline of contributions
-- 🎨 Built with Flask and Bootstrap for a responsive UI
+- Fetches recent GitHub activities (commits, PRs, issues)
+- Uses OpenAI to produce clean, human-readable summaries
+- Auto-tags activities for quick categorization
+- Displays counts and a timeline of contributions
+- Built with Flask and Bootstrap for a responsive UI
 
 ---
 
 ## 💡 Use Cases
 
-- 🧠 Generate weekly/monthly summaries of your contributions  
-- 👨‍💻 Enhance resumes or developer portfolios with AI-crafted insights  
-- 🔍 Track your coding habits and focus areas  
-- 📈 Build quick personal dashboards or analytics tools
+- Generate weekly/monthly summaries of your contributions  
+- Enhance resumes or developer portfolios with AI-crafted insights  
+- Track your coding habits and focus areas  
+- Build quick personal dashboards or analytics tools
 
 ---
 
