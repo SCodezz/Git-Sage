@@ -28,7 +28,8 @@ git‑sage is a Flask-based web app that fetches a GitHub user’s activity comm
 
 ---
 
-🛠️ Technologies Used
+##🛠️ Technologies Used:
+
 Flask – Backend web server
 
 OpenAI API – Summaries via ChatGPT
