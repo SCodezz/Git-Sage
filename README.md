@@ -5,7 +5,7 @@
 
 **Your AI-powered composer of GitHub contribution insights.**
 
-git‑sage is a Flask-based web app that fetches a GitHub user’s activity—commits, pull requests, and issues—and employs OpenAI to generate clear, actionable summaries. Each summary is paired with auto-generated tags (e.g., `bugfix`, `feature`) to help you reflect on your coding patterns.
+git‑sage is a Flask-based web app that fetches a GitHub user’s activity commits, pull requests, and issues and employs OpenAI to generate clear, actionable summaries. Each summary is paired with auto-generated tags (e.g., `bugfix`, `feature`) to help you reflect on your coding patterns.
 
 ---
 
@@ -28,6 +28,15 @@ git‑sage is a Flask-based web app that fetches a GitHub user’s activity—co
 
 ---
 
+🛠️ Technologies Used
+Flask – Backend web server
+
+OpenAI API – Summaries via ChatGPT
+
+GitHub REST API – Fetching user activity
+
+Bootstrap – Responsive UI styling
+---
 ## 📦 Getting Started
 
 ### 1. Clone the repository:
@@ -44,14 +53,13 @@ pip install -r requirements.txt
 
 ### 3. Configure environment variables:
 
-Create a `.env` file in the project root (this **must not** be committed):
+Create a `.env` file in the project root:
 
 ```env
 OPENAI_API_KEY=your-openai-api-key-here
 GITHUB_TOKEN=your-github-token-here
 ```
 
-Use `.env.example` to reference the required variables without exposing your keys.
 
 ### 4. Run the application:
 
@@ -85,15 +93,7 @@ git-sage/
 └── README.md             # This file
 ```
 
----
-🛠️ Technologies Used
-Flask – Backend web server
 
-OpenAI API – Summaries via ChatGPT
-
-GitHub REST API – Fetching user activity
-
-Bootstrap – Responsive UI styling
 
 ---
 
