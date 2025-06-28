@@ -1,265 +1,165 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>git-sage | GitHub Analyzer</title>
-  <!-- Bootstrap + Font Awesome (CDN links) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
-  <style>
-    :root {
-      --main: #6f42c1;
-      --accent: #6610f2;
-    }
-
-    body {
-      background: linear-gradient(to right, #f5f7fa, #e4edf5);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      padding: 30px;
-    }
-
-    .title {
-      text-align: center;
-      font-size: 2.5rem;
-      font-weight: bold;
-      color: var(--main);
-    }
-
-    .subtitle {
-      text-align: center;
-      font-size: 1.1rem;
-      color: #6c757d;
-      margin-bottom: 2rem;
-    }
-
-    .card {
-      border: none;
-      border-radius: 15px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
-      margin-bottom: 2rem;
-    }
-
-    .ai-summary {
-      background: rgba(111, 66, 193, 0.05);
-      border-left: 5px solid var(--main);
-      padding: 1rem;
-      font-size: 1rem;
-      white-space: pre-line;
-    }
-
-    .profile-img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 3px solid #e4e4e4;
-    }
-
-    .stat-value {
-      font-weight: bold;
-      font-size: 1.3rem;
-      color: var(--main);
-    }
-
-    .badge {
-      border-radius: 8px;
-      padding: 0.4rem 0.6rem;
-      margin: 0.2rem;
-      font-size: 0.85rem;
-    }
-
-    .icon-box {
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      margin-right: 1rem;
-    }
-
-    .icon-commit { background: #e0f5e9; color: #198754; }
-    .icon-pr { background: #e0ecff; color: #0d6efd; }
-    .icon-issue { background: #fff4d6; color: #ffc107; }
-
-    .footer {
-      text-align: center;
-      font-size: 0.9rem;
-      color: #777;
-      margin-top: 2rem;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Git‑Sage • GitHub Analyzer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
-<body>
+<body class="app-container">
 
-  <div class="container">
-    <h1 class="title">git‑sage</h1>
-    <p class="subtitle">A simple GitHub activity summarizer with AI ✨</p>
+  <div class="container py-5">
+    <header class="app-header text-center mb-4">
+      <h1 class="app-header__title">Git‑Sage</h1>
+      <p class="app-header__subtitle">A simple GitHub activity summarizer with AI</p>
+    </header>
 
-    <!-- Form Card -->
-    <div class="card p-4">
-      <div class="row g-3 align-items-center">
-        <div class="col-md-5">
-          <input type="text" id="githubUsername" class="form-control" placeholder="Enter GitHub username">
+    <section class="form-section card p-3 mb-4">
+      <div class="form-section__row row g-2">
+        <div class="col-md-6">
+          <input id="usernameInput" type="text" class="form-section__input form-control" placeholder="Enter GitHub username" />
         </div>
         <div class="col-md-4">
-          <select id="timeRange" class="form-select">
+          <select id="daysInput" class="form-section__select form-select">
             <option value="7">Last 7 days</option>
             <option value="14">Last 14 days</option>
             <option value="30">Last 30 days</option>
           </select>
         </div>
-        <div class="col-md-3">
-          <button id="analyzeBtn" class="btn btn-primary w-100">
-            <i class="fas fa-robot me-2"></i> Analyze
+        <div class="col-md-2">
+          <button id="analyzeButton" class="form-section__button btn btn-primary w-100">
+            Analyze
           </button>
         </div>
       </div>
-      <div id="errorAlert" class="alert alert-danger mt-3 d-none"></div>
-    </div>
+      <div id="errorMessage" class="form-section__error alert alert-danger mt-2 d-none"></div>
+    </section>
 
-    <!-- Loader -->
-    <div id="loader" class="text-center my-5 d-none">
+    <div id="loadingSection" class="loading-section text-center my-5 d-none">
       <div class="spinner-border text-primary"></div>
-      <p class="mt-3">Analyzing GitHub activity using AI...</p>
+      <p class="mt-2">Analyzing GitHub activity...</p>
     </div>
 
-    <!-- Results Section -->
-    <div id="results" class="d-none">
-      <!-- Profile Info -->
-      <div class="card p-4 d-flex flex-row align-items-center">
-        <img id="avatar" src="https://via.placeholder.com/100" class="profile-img me-4">
+    <section id="resultsSection" class="results-section d-none">
+      <div class="profile-section card p-3 mb-3 d-flex align-items-center">
+        <img id="profileAvatar" class="profile-section__avatar me-3 rounded-circle" src="https://via.placeholder.com/80" alt="Avatar" />
         <div>
-          <h4 id="userName"></h4>
-          <p id="userBio" class="text-muted mb-2"></p>
-          <div class="d-flex gap-4">
-            <div><span class="stat-value" id="repoCount">0</span><br><small>Repos</small></div>
-            <div><span class="stat-value" id="commitCount">0</span><br><small>Commits</small></div>
-            <div><span class="stat-value" id="prCount">0</span><br><small>PRs</small></div>
-            <div><span class="stat-value" id="issueCount">0</span><br><small>Issues</small></div>
+          <h4 id="profileName" class="profile-section__name"></h4>
+          <p id="profileBio" class="profile-section__bio text-muted mb-2"></p>
+          <div class="profile-section__stats d-flex gap-3">
+            <div><strong id="repoCount">0</strong><br /><small>Repos</small></div>
+            <div><strong id="commitCount">0</strong><br /><small>Commits</small></div>
+            <div><strong id="prCount">0</strong><br /><small>PRs</small></div>
+            <div><strong id="issueCount">0</strong><br /><small>Issues</small></div>
           </div>
         </div>
       </div>
 
-      <!-- AI Summary -->
-      <div class="card p-4">
-        <h5><i class="fas fa-lightbulb me-2 text-primary"></i>AI Summary</h5>
-        <div class="ai-summary" id="aiSummary">Waiting for summary...</div>
-        <div class="mt-3" id="tagsContainer"></div>
+      <div class="summary-section card p-3 mb-3">
+        <h5 class="summary-section__title">AI Summary</h5>
+        <pre id="summaryText" class="summary-section__text">Waiting for summary...</pre>
+        <div id="tagsList" class="summary-section__tags mt-2"></div>
       </div>
 
-      <!-- Contributions List -->
-      <div class="card p-4">
-        <h5><i class="fas fa-code-branch me-2 text-primary"></i>Recent Contributions</h5>
-        <div id="contributionsList" class="mt-3"></div>
+      <div class="contrib-section card p-3">
+        <h5 class="contrib-section__title">Recent Contributions</h5>
+        <div id="contribList" class="contrib-section__list mt-2"></div>
       </div>
-    </div>
+    </section>
 
-    <p class="footer">Made using Flask, GitHub API & OpenAI</p>
+    <footer class="app-footer text-center text-muted mt-4">
+      Made with Flask • GitHub API • OpenAI
+    </footer>
   </div>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    const loader = document.getElementById("loader");
-    const results = document.getElementById("results");
-    const errorAlert = document.getElementById("errorAlert");
+    const usernameInput = document.getElementById("usernameInput");
+    const daysInput = document.getElementById("daysInput");
+    const analyzeButton = document.getElementById("analyzeButton");
+    const errorMessage = document.getElementById("errorMessage");
+    const loadingSection = document.getElementById("loadingSection");
+    const resultsSection = document.getElementById("resultsSection");
 
-    document.getElementById("analyzeBtn").addEventListener("click", async () => {
-      const username = document.getElementById("githubUsername").value.trim();
-      const days = document.getElementById("timeRange").value;
+    const profileAvatar = document.getElementById("profileAvatar");
+    const profileName = document.getElementById("profileName");
+    const profileBio = document.getElementById("profileBio");
+    const repoCount = document.getElementById("repoCount");
+    const commitCount = document.getElementById("commitCount");
+    const prCount = document.getElementById("prCount");
+    const issueCount = document.getElementById("issueCount");
+
+    const summaryText = document.getElementById("summaryText");
+    const tagsList = document.getElementById("tagsList");
+    const contribList = document.getElementById("contribList");
+
+    analyzeButton.addEventListener("click", async () => {
+      const username = usernameInput.value.trim();
+      const days = daysInput.value;
 
       if (!username) {
-        errorAlert.textContent = "Please enter a GitHub username.";
-        errorAlert.classList.remove("d-none");
+        errorMessage.textContent = "Please enter a username.";
+        errorMessage.classList.remove("d-none");
         return;
       }
 
-      errorAlert.classList.add("d-none");
-      loader.classList.remove("d-none");
-      results.classList.add("d-none");
+      errorMessage.classList.add("d-none");
+      loadingSection.classList.remove("d-none");
+      resultsSection.classList.add("d-none");
 
       try {
         const res = await fetch("/analyze", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, days })
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({username, days})
+        });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || "Fetch failed");
+
+        profileAvatar.src = data.avatar_url || "";
+        profileName.textContent = data.name || "";
+        profileBio.textContent = data.bio || "";
+        repoCount.textContent = data.public_repos;
+        commitCount.textContent = data.commit_count;
+        prCount.textContent = data.pr_count;
+        issueCount.textContent = data.issue_count;
+
+        summaryText.textContent = data.summary;
+        tagsList.innerHTML = "";
+        (data.tags || []).forEach(tag => {
+          const span = document.createElement("span");
+          span.className = "badge bg-secondary me-1";
+          span.textContent = tag;
+          tagsList.appendChild(span);
         });
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Something went wrong");
-
-        fillProfile(data);
-        fillSummary(data);
-        fillContributions(data);
-
-        loader.classList.add("d-none");
-        results.classList.remove("d-none");
+        contribList.innerHTML = "";
+        if (!data.contributions.length) {
+          contribList.innerHTML = "<p>No recent contributions.</p>";
+        } else {
+          data.contributions.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "d-flex align-items-center mb-2";
+            const icon = document.createElement("i");
+            icon.className = {
+              commit: "fas fa-code-commit text-success",
+              pr: "fas fa-code-pull-request text-primary",
+              issue: "fas fa-bug text-warning"
+            }[item.type] || "fas fa-code";
+            card.innerHTML = `<i class="${icon.className} me-2"></i><div><strong>${item.title}</strong><br/><small>${item.repo}</small></div>`;
+            contribList.appendChild(card);
+          });
+        }
       } catch (err) {
-        loader.classList.add("d-none");
-        errorAlert.textContent = err.message;
-        errorAlert.classList.remove("d-none");
+        errorMessage.textContent = err.message;
+        errorMessage.classList.remove("d-none");
+      } finally {
+        loadingSection.classList.add("d-none");
+        resultsSection.classList.remove("d-none");
       }
     });
-
-    function fillProfile(data) {
-      document.getElementById("avatar").src = data.avatar_url || "";
-      document.getElementById("userName").textContent = data.name || "GitHub User";
-      document.getElementById("userBio").textContent = data.bio || "No bio available.";
-      document.getElementById("repoCount").textContent = data.public_repos;
-      document.getElementById("commitCount").textContent = data.commit_count;
-      document.getElementById("prCount").textContent = data.pr_count;
-      document.getElementById("issueCount").textContent = data.issue_count;
-    }
-
-    function fillSummary(data) {
-      document.getElementById("aiSummary").textContent = data.summary;
-      const tagBox = document.getElementById("tagsContainer");
-      tagBox.innerHTML = "";
-      (data.tags || []).forEach(tag => {
-        const badge = document.createElement("span");
-        badge.className = "badge bg-secondary";
-        badge.textContent = tag;
-        tagBox.appendChild(badge);
-      });
-    }
-
-    function fillContributions(data) {
-      const container = document.getElementById("contributionsList");
-      container.innerHTML = "";
-      if (!data.contributions || data.contributions.length === 0) {
-        container.innerHTML = "<p>No recent contributions found.</p>";
-        return;
-      }
-
-      data.contributions.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "d-flex align-items-center mb-3";
-
-        const iconDiv = document.createElement("div");
-        iconDiv.className = `icon-box icon-${item.type}`;
-        iconDiv.innerHTML = `<i class="${getIcon(item.type)}"></i>`;
-
-        const contentDiv = document.createElement("div");
-        contentDiv.innerHTML = `<strong>${item.title}</strong><br><small class="text-muted">${item.repo}</small>`;
-
-        div.appendChild(iconDiv);
-        div.appendChild(contentDiv);
-        container.appendChild(div);
-      });
-    }
-
-    function getIcon(type) {
-      const icons = {
-        "commit": "fas fa-code-commit",
-        "pr": "fas fa-code-pull-request",
-        "issue": "fas fa-bug"
-      };
-      return icons[type] || "fas fa-code";
-    }
   </script>
 </body>
 </html>
