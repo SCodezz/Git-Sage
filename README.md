@@ -1,10 +1,10 @@
 
 
 
-## 🧠 git‑sage
+## 🧠 Git‑Sage
 
 
-**Your AI-powered composer of GitHub contribution insights.**
+**AI-powered GitHub contribution Analyzer.**
 
 git‑sage is a Flask-based web app that fetches a GitHub user’s activity commits, pull requests, and issues and employs OpenAI to generate clear, actionable summaries. Each summary is paired with auto-generated tags (e.g., `bugfix`, `feature`) to help you reflect on your coding patterns.
 
